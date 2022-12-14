@@ -400,18 +400,6 @@ bool SEN5XComponent::write_temperature_compensation_(const TemperatureCompensati
 }
 
 
-#bool SEN5XComponent::start_reset() {
-#  if (!write_command(SEN5X_CMD_RESTART)) {
-#    this->status_set_warning();
-#    ESP_LOGE(TAG, "error restart sensor", this->last_error_);
-#    return false;
-#  } else {
-#    ESP_LOGD(TAG, "restart sensor started");
-#  }
-#  return true;
-#}
-
-
 bool SEN5XComponent::start_fan_cleaning() {
   if (!write_command(SEN5X_CMD_START_CLEANING_FAN)) {
     this->status_set_warning();
