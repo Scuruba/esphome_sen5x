@@ -48,6 +48,10 @@ struct TemperatureCompensation {
 
 class SEN5XComponent : public PollingComponent, public sensirion_common::SensirionI2CDevice {
  public:
+  bool start_fan_cleaning();
+  
+  bool start_reset();
+  
   float get_setup_priority() const override { return setup_priority::DATA; }
   void setup() override;
   void dump_config() override;
@@ -92,8 +96,7 @@ class SEN5XComponent : public PollingComponent, public sensirion_common::Sensiri
     temperature_compensation_.value().normalized_offset_slope = normalized_offset_slope * 100;
     temperature_compensation_.value().time_constant = time_constant;
   }
-  bool start_fan_cleaning();
-  bool start_reset();
+  
   
  protected:
   bool write_tuning_parameters_(uint16_t i2c_command, const GasTuning &tuning);
