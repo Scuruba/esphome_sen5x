@@ -60,6 +60,7 @@ CONF_VOC_BASELINE = "voc_baseline"
 
 # Actions
 StartFanAction = sen5x_ns.class_("StartFanAction", automation.Action)
+StartReset = sen5x_ns.class_("StartReset", automation.Action)
 
 ACCELERATION_MODES = {
     "low": RhtAccelerationMode.LOW_ACCELERATION,
