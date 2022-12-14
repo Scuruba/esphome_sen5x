@@ -21,7 +21,7 @@ template<typename... Ts> class StartReset : public Action<Ts...> {
  public:
   explicit StartReset(SEN5XComponent *sen5x) : sen5x_(sen5x) {}
 
-  void play(Ts... x) override { this->sen5x_->start_reset(); }#
+  void play(Ts... x) override { this->sen5x_->start_reset(); }
 
  protected:
   SEN5XComponent *sen5x_;
