@@ -27,7 +27,7 @@ template<typename... Ts> class StartReset : public Action<Ts...> {
   SEN5XComponent *sen5x_;
 };
 
-template<typename... Ts> class StartReset : public Action<Ts...> {
+template<typename... Ts> class StartMeasurementsRHTOnly : public Action<Ts...> {
  public:
   explicit StartMeasurementModeRHTOnly(SEN5XComponent *sen5x) : sen5x_(sen5x) {}
 
@@ -37,7 +37,7 @@ template<typename... Ts> class StartReset : public Action<Ts...> {
   SEN5XComponent *sen5x_;
 };
 
-template<typename... Ts> class StartReset : public Action<Ts...> {
+template<typename... Ts> class StartMeasurements : public Action<Ts...> {
  public:
   explicit StartMeasurementMode(SEN5XComponent *sen5x) : sen5x_(sen5x) {}
 
