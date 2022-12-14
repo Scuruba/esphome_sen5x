@@ -239,7 +239,7 @@ SEN5X_ACTION_SCHEMA = maybe_simple_id(
 )
 
 @automation.register_action(
-    "sen5x.start_restart", StartRestart, SEN5X_ACTION_SCHEMA
+    "sen5x.start_restart", StartReset, SEN5X_ACTION_SCHEMA
 )
 
 async def sen54_fan_to_code(config, action_id, template_arg, args):
