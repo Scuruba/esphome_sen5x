@@ -27,5 +27,25 @@ template<typename... Ts> class StartReset : public Action<Ts...> {
   SEN5XComponent *sen5x_;
 };
 
+template<typename... Ts> class StartReset : public Action<Ts...> {
+ public:
+  explicit StartMeasurementModeRHTOnly(SEN5XComponent *sen5x) : sen5x_(sen5x) {}
+
+  void play(Ts... x) override { this->sen5x_->start_measurements_rht_only(); }
+
+ protected:
+  SEN5XComponent *sen5x_;
+};
+
+template<typename... Ts> class StartReset : public Action<Ts...> {
+ public:
+  explicit StartMeasurementMode(SEN5XComponent *sen5x) : sen5x_(sen5x) {}
+
+  void play(Ts... x) override { this->sen5x_->start_measurements(); }
+
+ protected:
+  SEN5XComponent *sen5x_;
+};
+
 }  // namespace sen5x
 }  // namespace esphome
