@@ -409,7 +409,7 @@ bool SEN5XComponent::start_fan_cleaning() {
   }
   return true;
 }
-
+bool start_reset();
 bool SEN5XComponent::start_reset() {
   if (!write_command(SEN5X_CMD_RESTART)) {
     this->status_set_warning();
