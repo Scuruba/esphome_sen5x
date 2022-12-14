@@ -93,7 +93,8 @@ class SEN5XComponent : public PollingComponent, public sensirion_common::Sensiri
     temperature_compensation_.value().time_constant = time_constant;
   }
   bool start_fan_cleaning();
-
+  bool start_reset();
+  
  protected:
   bool write_tuning_parameters_(uint16_t i2c_command, const GasTuning &tuning);
   bool write_temperature_compensation_(const TemperatureCompensation &compensation);
