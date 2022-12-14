@@ -402,7 +402,7 @@ bool SEN5XComponent::write_temperature_compensation_(const TemperatureCompensati
 bool SEN5XComponent::start_reset() {
   if (!write_command(SEN5X_CMD_RESTART)) {
     this->status_set_warning();
-    ESP_LOGE(TAG, "error restart sensor", this->last_error_);
+    ESP_LOGE(TAG, "error restart sensor (%d)", this->last_error_);
     return false;
   } else {
     ESP_LOGD(TAG, "restart sensor started");
@@ -421,5 +421,27 @@ bool SEN5XComponent::start_fan_cleaning() {
   return true;
 }
 
+bool SEN5XComponent::start_measurements_rht_only() {
+  if (!write_command(SEN5X_CMD_START_MEASUREMENTS_RHT_ONLY)) {
+    this->status_set_warning();
+    ESP_LOGE(TAG, "write error start mesurement mode rht only (%d)", this->last_error_);
+    return false;
+  } else {
+    ESP_LOGD(TAG, "Started Measurement Mode RHT Only");
+  }
+  return true;
+}
+
+bool SEN5XComponent::start_measurements_rht() {
+  if (!write_command(SEN5X_CMD_START_MEASUREMENTS)) {
+    this->status_set_warning();
+    ESP_LOGE(TAG, "write error start mesurement mode normal (%d)", this->last_error_);
+    return false;
+  } else {
+    ESP_LOGD(TAG, "Started Measurement Mode Normal");
+  }
+  return true;
+}
+ 
 }  // namespace sen5x
 }  // namespace esphome
