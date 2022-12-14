@@ -432,7 +432,7 @@ bool SEN5XComponent::start_measurements_rht_only() {
   return true;
 }
 
-bool SEN5XComponent::start_measurements_rht() {
+bool SEN5XComponent::start_measurements() {
   if (!write_command(SEN5X_CMD_START_MEASUREMENTS)) {
     this->status_set_warning();
     ESP_LOGE(TAG, "write error start mesurement mode normal (%d)", this->last_error_);
