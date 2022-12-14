@@ -250,3 +250,18 @@ async def sen54_fan_to_code(config, action_id, template_arg, args):
     paren = await cg.get_variable(config[CONF_ID])
     return cg.new_Pvariable(action_id, template_arg, paren)
 
+@automation.register_action(
+    "sen5x.start_measurements", StartMeasurements, SEN5X_ACTION_SCHEMA
+)
+
+async def sen54_fan_to_code(config, action_id, template_arg, args):
+    paren = await cg.get_variable(config[CONF_ID])
+    return cg.new_Pvariable(action_id, template_arg, paren)
+
+@automation.register_action(
+    "sen5x.start_measurements_rht_only", StartMeasurementsRHTOnly, SEN5X_ACTION_SCHEMA
+)
+
+async def sen54_fan_to_code(config, action_id, template_arg, args):
+    paren = await cg.get_variable(config[CONF_ID])
+    return cg.new_Pvariable(action_id, template_arg, paren)
