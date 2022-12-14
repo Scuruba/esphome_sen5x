@@ -51,6 +51,8 @@ class SEN5XComponent : public PollingComponent, public sensirion_common::Sensiri
   
   bool start_fan_cleaning();
   bool start_reset();
+  bool start_measurements_rht_only();
+  bool start_measurements();
   
   float get_setup_priority() const override { return setup_priority::DATA; }
   void setup() override;
