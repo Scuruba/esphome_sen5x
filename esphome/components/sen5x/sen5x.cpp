@@ -22,6 +22,7 @@ static const uint16_t SEN5X_CMD_STOP_MEASUREMENTS = 0x3f86;
 static const uint16_t SEN5X_CMD_TEMPERATURE_COMPENSATION = 0x60B2;
 static const uint16_t SEN5X_CMD_VOC_ALGORITHM_STATE = 0x6181;
 static const uint16_t SEN5X_CMD_VOC_ALGORITHM_TUNING = 0x60D0;
+static const uint16_t SEN5X_CMD_RESTART = 0xD304;
 
 void SEN5XComponent::setup() {
   ESP_LOGCONFIG(TAG, "Setting up sen5x...");
@@ -405,6 +406,17 @@ bool SEN5XComponent::start_fan_cleaning() {
     return false;
   } else {
     ESP_LOGD(TAG, "Fan auto clean started");
+  }
+  return true;
+}
+
+bool SEN5XComponent::start_reset() {
+  if (!write_command(SEN5X_CMD_RESTART)) {
+    this->status_set_warning();
+    ESP_LOGE(TAG, "error restart sensor", this->last_error_);
+    return false;
+  } else {
+    ESP_LOGD(TAG, "restart sensor started");
   }
   return true;
 }
