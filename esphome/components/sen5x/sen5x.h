@@ -48,7 +48,7 @@ struct TemperatureCompensation {
 
 class SEN5XComponent : public PollingComponent, public sensirion_common::SensirionI2CDevice {
  public:
-  bool start_fan_cleaning();
+  #bool start_fan_cleaning();
   
   bool start_reset();
   
