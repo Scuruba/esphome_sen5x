@@ -32,7 +32,7 @@ template<typename... Ts> class StartReset : public Action<Ts...> {
   
 template<typename... Ts> class StartMeasurementsRHTOnly : public Action<Ts...> {
  public:
-  explicit StartMeasurementModeRHTOnly(SEN5XComponent *sen5x) : sen5x_(sen5x) {}
+  explicit StartMeasurementsRHTOnly(SEN5XComponent *sen5x) : sen5x_(sen5x) {}
 
   void play(Ts... x) override { this->sen5x_->start_measurements_rht_only(); }
 
@@ -43,7 +43,7 @@ template<typename... Ts> class StartMeasurementsRHTOnly : public Action<Ts...> {
 
 template<typename... Ts> class StartMeasurements : public Action<Ts...> {
  public:
-  explicit StartMeasurementMode(SEN5XComponent *sen5x) : sen5x_(sen5x) {}
+  explicit StartMeasurements(SEN5XComponent *sen5x) : sen5x_(sen5x) {}
 
   void play(Ts... x) override { this->sen5x_->start_measurements(); }
 
