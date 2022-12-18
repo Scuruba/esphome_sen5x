@@ -47,6 +47,8 @@ class WaveshareEPaper : public PollingComponent,
 
   void reset_() {
     if (this->reset_pin_ != nullptr) {
+      this->reset_pin_->digital_write(true);
+      delay(reset_duration_);  // NOLINT
       this->reset_pin_->digital_write(false);
       delay(reset_duration_);  // NOLINT
       this->reset_pin_->digital_write(true);
@@ -417,6 +419,27 @@ class WaveshareEPaper2P13InDKE : public WaveshareEPaper {
 
   uint32_t full_update_every_{30};
   uint32_t at_update_{0};
+};
+
+class WaveshareEPaper1P54InV2 : public WaveshareEPaper {
+ public:
+  void initialize() override;
+
+  void display() override;
+
+  void dump_config() override;
+
+  void deep_sleep() override {
+    // deep sleep
+    this->command(0x10);
+    this->data(0x01);
+    delay(100);  // NOLINT
+  }
+
+ protected:
+  int get_width_internal() override;
+
+  int get_height_internal() override;
 };
 
 }  // namespace waveshare_epaper
