@@ -82,7 +82,6 @@ static const uint8_t PARTIAL_UPDATE_LUT_TTGO_B1[LUT_SIZE_TTGO_B1] = {
     0x18, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x0F, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
-
 void WaveshareEPaper::setup_pins_() {
   this->init_internal_(this->get_buffer_length_());
   this->dc_pin_->setup();  // OUTPUT
@@ -111,7 +110,6 @@ void WaveshareEPaper::data(uint8_t value) {
 }
 bool WaveshareEPaper::wait_until_idle_() {
   if (this->busy_pin_ == nullptr) {
-    delay(1);
     return true;
   }
 
@@ -164,7 +162,7 @@ void WaveshareEPaper::on_safe_shutdown() { this->deep_sleep(); }
 // ========================================================
 //                          Type A
 // ========================================================
-//EPD_2IN9_Init
+
 void WaveshareEPaperTypeA::initialize() {
   if (this->model_ == TTGO_EPAPER_2_13_IN_B74) {
     this->reset_pin_->digital_write(false);
@@ -256,10 +254,6 @@ void WaveshareEPaperTypeA::dump_config() {
   LOG_PIN("  Busy Pin: ", this->busy_pin_);
   LOG_UPDATE_INTERVAL(this);
 }
-
-
-
-
 void HOT WaveshareEPaperTypeA::display() {
   bool full_update = this->at_update_ == 0;
   bool prev_full_update = this->at_update_ == 1;
@@ -268,7 +262,7 @@ void HOT WaveshareEPaperTypeA::display() {
     this->status_set_warning();
     return;
   }
-//??????
+
   if (this->full_update_every_ >= 1) {
     if (full_update != prev_full_update) {
       switch (this->model_) {
@@ -284,16 +278,13 @@ void HOT WaveshareEPaperTypeA::display() {
         case TTGO_EPAPER_2_13_IN_B1:
           this->write_lut_(full_update ? FULL_UPDATE_LUT_TTGO_B1 : PARTIAL_UPDATE_LUT_TTGO_B1, LUT_SIZE_TTGO_B1);
           break;
-        case WAVESHARE_EPAPER_1_54_IN_V2:
-          this->write_lut_(full_update ? FULL_UPDATE_WAVESHARE_1P54_V2 : PARTIAL_UPDATE_WAVESHARE_1P54_V2, 153);
-          break;
         default:
           this->write_lut_(full_update ? FULL_UPDATE_LUT : PARTIAL_UPDATE_LUT, LUT_SIZE_WAVESHARE);
       }
     }
     this->at_update_ = (this->at_update_ + 1) % this->full_update_every_;
   }
-//EPD_2IN9_SetWindows // EPD_1IN54_V2_SetWindows
+
   // Set x & y regions we want to write to (full)
   switch (this->model_) {
     case TTGO_EPAPER_2_13_IN_B1:
@@ -348,7 +339,7 @@ void HOT WaveshareEPaperTypeA::display() {
     this->status_set_warning();
     return;
   }
-//EPD_2IN9_Display // EPD_1IN54_V2_Display
+
   // COMMAND WRITE RAM
   this->command(0x24);
   this->start_data_();
@@ -367,16 +358,16 @@ void HOT WaveshareEPaperTypeA::display() {
       this->write_array(this->buffer_, this->get_buffer_length_());
   }
   this->end_data_();
-//EPD_2IN9_TurnOnDisplay // EPD_1IN54_V2_TurnOnDisplay
+
   // COMMAND DISPLAY UPDATE CONTROL 2
   this->command(0x22);
   switch (this->model_) {
     case WAVESHARE_EPAPER_2_9_IN_V2:
+    case WAVESHARE_EPAPER_1_54_IN_V2:
     case TTGO_EPAPER_2_13_IN_B74:
       this->data(full_update ? 0xF7 : 0xFF);
       break;
     case TTGO_EPAPER_2_13_IN_B73:
-    case WAVESHARE_EPAPER_1_54_IN_V2:
       this->data(0xC7);
       break;
     default:
@@ -387,13 +378,8 @@ void HOT WaveshareEPaperTypeA::display() {
   // COMMAND MASTER ACTIVATION
   this->command(0x20);
   // COMMAND TERMINATE FRAME READ WRITE
-  switch (this->model_) {
-    case WAVESHARE_EPAPER_1_54_IN_V2:
-      break;
-    default:
-      this->command(0xFF);
-      break;
-  }
+  this->command(0xFF);
+
   this->status_clear_warning();
 }
 int WaveshareEPaperTypeA::get_width_internal() {
@@ -1622,143 +1608,6 @@ void WaveshareEPaper2P13InDKE::dump_config() {
 
 void WaveshareEPaper2P13InDKE::set_full_update_every(uint32_t full_update_every) {
   this->full_update_every_ = full_update_every;
-}
-
-static const uint8_t LUT_SIZE_WAVESHARE_1P54_V2 = 159;
-
-static const uint8_t FULL_UPDATE_WAVESHARE_1P54_V2[LUT_SIZE_WAVESHARE_1P54_V2] = {
-    0x80,	0x48,	0x40,	0x0,	0x0,	0x0,	0x0,	0x0,	0x0,	0x0,	0x0,	0x0,
-    0x40,	0x48,	0x80,	0x0,	0x0,	0x0,	0x0,	0x0,	0x0,	0x0,	0x0,	0x0,
-    0x80,	0x48,	0x40,	0x0,	0x0,	0x0,	0x0,	0x0,	0x0,	0x0,	0x0,	0x0,
-    0x40,	0x48,	0x80,	0x0,	0x0,	0x0,	0x0,	0x0,	0x0,	0x0,	0x0,	0x0,
-    0x0,	0x0,	0x0,	0x0,	0x0,	0x0,	0x0,	0x0,	0x0,	0x0,	0x0,	0x0,
-    0xA,	0x0,	0x0,	0x0,	0x0,	0x0,	0x0,					
-    0x8,	0x1,	0x0,	0x8,	0x1,	0x0,	0x2,					
-    0xA,	0x0,	0x0,	0x0,	0x0,	0x0,	0x0,					
-    0x0,	0x0,	0x0,	0x0,	0x0,	0x0,	0x0,					
-    0x0,	0x0,	0x0,	0x0,	0x0,	0x0,	0x0,					
-    0x0,	0x0,	0x0,	0x0,	0x0,	0x0,	0x0,					
-    0x0,	0x0,	0x0,	0x0,	0x0,	0x0,	0x0,					
-    0x0,	0x0,	0x0,	0x0,	0x0,	0x0,	0x0,					
-    0x0,	0x0,	0x0,	0x0,	0x0,	0x0,	0x0,					
-    0x0,	0x0,	0x0,	0x0,	0x0,	0x0,	0x0,					
-    0x0,	0x0,	0x0,	0x0,	0x0,	0x0,	0x0,					
-    0x0,	0x0,	0x0,	0x0,	0x0,	0x0,	0x0,					
-    0x22,	0x22,	0x22,	0x22,	0x22,	0x22,	0x0,	0x0,	0x0,			
-    0x22,	0x17,	0x41,	0x0,	0x32,	0x20};
-
-static const uint8_t PARTIAL_UPDATE_WAVESHARE_1P54_V2[LUT_SIZE_WAVESHARE_1P54_V2] = {
-    0x0,0x40,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,
-    0x80,0x80,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,
-    0x40,0x40,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,
-    0x0,0x80,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,
-    0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,
-    0xF,0x0,0x0,0x0,0x0,0x0,0x0,
-    0x1,0x1,0x0,0x0,0x0,0x0,0x0,
-    0x0,0x0,0x0,0x0,0x0,0x0,0x0,
-    0x0,0x0,0x0,0x0,0x0,0x0,0x0,
-    0x0,0x0,0x0,0x0,0x0,0x0,0x0,
-    0x0,0x0,0x0,0x0,0x0,0x0,0x0,
-    0x0,0x0,0x0,0x0,0x0,0x0,0x0,
-    0x0,0x0,0x0,0x0,0x0,0x0,0x0,
-    0x0,0x0,0x0,0x0,0x0,0x0,0x0,
-    0x0,0x0,0x0,0x0,0x0,0x0,0x0,
-    0x0,0x0,0x0,0x0,0x0,0x0,0x0,
-    0x0,0x0,0x0,0x0,0x0,0x0,0x0,
-    0x22,0x22,0x22,0x22,0x22,0x22,0x0,0x0,0x0,
-    0x02,0x17,0x41,0xB0,0x32,0x28,};
-
-void WaveshareEPaper1P54InV2::initialize() {
-
-  //FULL
-  this->reset_();
-
-  this->wait_until_idle_();  // waiting for the electronic paper IC to release the idle signal
-  this->command(0x12);  // SWRESET
-  this->wait_until_idle_();  // waiting for the electronic paper IC to release the idle signal
-
-  this->command(0x01);  //Driver output control
-  this->data(0xC7);
-  this->data(0x00);
-  this->data(0x01);
-
-  this->command(0x11);  //data entry mode
-  this->data(0x01);
-
-  this->command(0x44); // SET_RAM_X_ADDRESS_START_END_POSITION
-  this->data((0 >> 3) & 0xFF);
-  this->data((199 >> 3) & 0xFF);
-
-  this->command(0x44); // SET_RAM_Y_ADDRESS_START_END_POSITION
-  this->data(199 & 0xFF);
-  this->data((199 >> 8) & 0xFF);
-  this->data(0 & 0xFF);
-  this->data((0 >> 8) & 0xFF);
-
-  this->command(0x3C); //BorderWavefrom
-  this->data(0x01);
-
-  this->command(0x18); //BorderWavefrom
-  this->data(0x80);
-
-  this->command(0x22);  //Load Temperature and waveform setting.
-  this->data(0xB1);
-  this->command(0x20);
-
-  this->command(0x4E); // SET_RAM_X_ADDRESS_COUNTER
-  this->data(0 & 0xFF);
-
-  this->command(0x4F); // SET_RAM_Y_ADDRESS_COUNTER
-  this->data(199 & 0xFF);
-  this->data((199 >> 8) & 0xFF);
-  this->wait_until_idle_();  // waiting for the electronic paper IC to release the idle signal
-
-  this->write_lut_(FULL_UPDATE_WAVESHARE_1P54_V2, 153); //EPD_1IN54_V2_SetLut
-
-  this->command(0x3F);
-  this->data(FULL_UPDATE_WAVESHARE_1P54_V2[153]);
-
-  this->command(0x03);
-  this->data(FULL_UPDATE_WAVESHARE_1P54_V2[154]);
-
-  this->command(0x04);
-  this->data(FULL_UPDATE_WAVESHARE_1P54_V2[155]);
-  this->data(FULL_UPDATE_WAVESHARE_1P54_V2[156]);
-  this->data(FULL_UPDATE_WAVESHARE_1P54_V2[157]);
-
-  this->command(0x2C);
-  this->data(FULL_UPDATE_WAVESHARE_1P54_V2[158]);
-  
-
-void HOT WaveshareEPaper1P54InV2::display() {
-  uint32_t buf_len = this->get_buffer_length_();
-  // COMMAND DATA START TRANSMISSION NEW DATA
-  this->command(0x24);
-  delay(2);
-  for (uint32_t i = 0; i < buf_len; i++) {
-    this->data(~(this->buffer_[i]));
-  }
-
-  // COMMAND DISPLAY REFRESH
-  this->command(0x22);
-  this->data(0xC7);
-  this->command(0x20);
-  this->wait_until_idle_();
-}
-}
-
-int WaveshareEPaper1P54InV2::get_width_internal() { return 200; }
-
-int WaveshareEPaper1P54InV2::get_height_internal() { return 200; }
-
-void WaveshareEPaper1P54InV2::dump_config() {
-  LOG_DISPLAY("", "Waveshare E-Paper", this);
-  ESP_LOGCONFIG(TAG, "  Model: 1.54in-V2");
-  ESP_LOGCONFIG(TAG, "  Full Update Every: %u", this->full_update_every_);
-  LOG_PIN("  Reset Pin: ", this->reset_pin_);
-  LOG_PIN("  DC Pin: ", this->dc_pin_);
-  LOG_PIN("  Busy Pin: ", this->busy_pin_);
-  LOG_UPDATE_INTERVAL(this);
 }
 
 }  // namespace waveshare_epaper
