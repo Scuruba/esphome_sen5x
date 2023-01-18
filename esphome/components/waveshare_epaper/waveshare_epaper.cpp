@@ -210,8 +210,8 @@ void WaveshareEPaper::on_safe_shutdown() { this->deep_sleep(); }
 // ========================================================
 
 void WaveshareEPaperTypeA::initialize() {
-  if (this->model_ == TTGO_EPAPER_2_13_IN_B74 || WAVESHARE_EPAPER_1_54_IN_V2) {
-    this->reset_pin_->digital_write(false); //INITIAL CONFIGURATION
+  if (this->model_ == TTGO_EPAPER_2_13_IN_B74) {
+    this->reset_pin_->digital_write(false);
     delay(10);
     this->reset_pin_->digital_write(true);
     delay(10);
@@ -220,49 +220,35 @@ void WaveshareEPaperTypeA::initialize() {
     this->command(0x12);  // SWRESET
     this->wait_until_idle_();
   }
-  switch (this->model_) {
-    case WAVESHARE_EPAPER_1_54_IN_V2:
-      this->command(0x01); //DRIVER OUTPUT CONTROL
-      //this->data(0xC7);
-      //this->data(0x00);
-      //this->data(0x01);
-      this->data(this->get_height_internal() - 1);
-      this->data((this->get_height_internal() - 1) >> 8);
-      this->data(0x00);
-      // COMMAND WRITE VCOM REGISTER
-      this->command(0x2C); //???
-      this->data(0xA8);
-      break;
-    default:
-      // COMMAND DRIVER OUTPUT CONTROL
-      this->command(0x01);
-      this->data(this->get_height_internal() - 1);
-      this->data((this->get_height_internal() - 1) >> 8);
-      this->data(0x00);  // ? GD = 0, SM = 0, TB = 0
 
-      // COMMAND BOOSTER SOFT START CONTROL
-      this->command(0x0C);
-      this->data(0xD7);
-      this->data(0xD6);
-      this->data(0x9D);
+  // COMMAND DRIVER OUTPUT CONTROL
+  this->command(0x01);
+  this->data(this->get_height_internal() - 1);
+  this->data((this->get_height_internal() - 1) >> 8);
+  this->data(0x00);  // ? GD = 0, SM = 0, TB = 0
 
-      // COMMAND WRITE VCOM REGISTER
-      this->command(0x2C);
-      this->data(0xA8);
+  // COMMAND BOOSTER SOFT START CONTROL
+  this->command(0x0C); //Nicht vorhanden
+  this->data(0xD7);
+  this->data(0xD6);
+  this->data(0x9D);
 
-      // COMMAND SET DUMMY LINE PERIOD
-      this->command(0x3A);
-      this->data(0x1A);
+  // COMMAND WRITE VCOM REGISTER
+  this->command(0x2C); //???
+  this->data(0xA8);
 
-      // COMMAND SET GATE TIME
-      this->command(0x3B);
-      this->data(0x08);  // 2µs per row
-  }
+  // COMMAND SET DUMMY LINE PERIOD
+  this->command(0x3A); //Nicht vorhanden
+  this->data(0x1A);
+
+  // COMMAND SET GATE TIME
+  this->command(0x3B); //Nicht vorhanden
+  this->data(0x08);  // 2µs per row
+
   // COMMAND DATA ENTRY MODE SETTING
-  this->command(0x11); 
+  this->command(0x11);
   switch (this->model_) {
     case TTGO_EPAPER_2_13_IN_B1:
-    //case WAVESHARE_EPAPER_1_54_IN_V2:
       this->data(0x01);  // x increase, y decrease : as in demo code
       break;
     case TTGO_EPAPER_2_13_IN_B74:
@@ -274,7 +260,7 @@ void WaveshareEPaperTypeA::initialize() {
       this->data(0x80);
       break;
     default:
-      this->data(0x03);  // from top left to bottom right 
+      this->data(0x03);  // from top left to bottom right
   }
 }
 void WaveshareEPaperTypeA::dump_config() {
@@ -339,10 +325,6 @@ void HOT WaveshareEPaperTypeA::display() {
           this->write_lut_(full_update ? FULL_UPDATE_LUT_TTGO_B1 : PARTIAL_UPDATE_LUT_TTGO_B1, LUT_SIZE_TTGO_B1);
           break;
         case WAVESHARE_EPAPER_1_54_IN_V2:
-          //this->reset_pin_->digital_write(false); //module reset
-          //delay(2);
-          //this->reset_pin_->digital_write(true);
-          //delay(2);
           this->write_lut_(full_update ? FULL_UPDATE_LUT_1P54V2 : PARTIAL_UPDATE_LUT_1P54V2, LUT_SIZE_WAVESHARE_1P54V2);
           break;
         default:
@@ -375,33 +357,11 @@ void HOT WaveshareEPaperTypeA::display() {
       this->data((this->get_height_internal() - 1) >> 8);
 
       break;
-    case WAVESHARE_EPAPER_1_54_IN_V2:
-      this->command(0x44);
-      this->data(0x00);
-      this->data((this->get_width_internal() - 1) >> 3);
-      this->command(0x45);
-      this->data(0x00);
-      this->data(0x00);
-      this->data(this->get_height_internal() - 1); //199
-      this->data((this->get_height_internal() - 1) >> 8); //0
-
-      this->command(0x22); //In Standard nicht vorhanden
-      this->data(0xB1);  // Load Temperature and waveform setting.
-
-      this->command(0x20);
-
-      // COMMAND SET RAM X ADDRESS COUNTER
-      this->command(0x4E); //gleich
-      this->data(0x00);
-      // COMMAND SET RAM Y ADDRESS COUNTER
-      this->command(0x4F);
-      this->data(0xC7); //199 unterschiedlich--------
-      this->data(0x00);
-      break;
     case TTGO_EPAPER_2_13_IN_B74:
       // BorderWaveform
       this->command(0x3C);
       this->data(full_update ? 0x05 : 0x80);
+
       // fall through
     default:
       // COMMAND SET RAM X ADDRESS START END POSITION
@@ -412,8 +372,8 @@ void HOT WaveshareEPaperTypeA::display() {
       this->command(0x45);
       this->data(0x00);
       this->data(0x00);
-      this->data(this->get_height_internal() - 1);
-      this->data((this->get_height_internal() - 1) >> 8);
+      this->data(this->get_height_internal() - 1); //199
+      this->data((this->get_height_internal() - 1) >> 8); //0
 
       // COMMAND SET RAM X ADDRESS COUNTER
       this->command(0x4E);
@@ -452,15 +412,15 @@ void HOT WaveshareEPaperTypeA::display() {
   this->command(0x22);
   switch (this->model_) {
     case WAVESHARE_EPAPER_2_9_IN_V2:
+    case WAVESHARE_EPAPER_1_54_IN_V2:
     case TTGO_EPAPER_2_13_IN_B74:
       this->data(full_update ? 0xF7 : 0xFF);
       break;
     case TTGO_EPAPER_2_13_IN_B73:
-    case WAVESHARE_EPAPER_1_54_IN_V2:
-      this->data(full_update ? 0xC7 : 0xCF); //199 (Normal 0xF7 und FF //Beispiel Full 0xC7 //Part 0xCF)
+      this->data(0xC7);
       break;
     default:
-      this->data(0xC4); //196
+      this->data(0xC4);
       break;
   }
 
